@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { toaster } from "../components/ui/toaster";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { LuCopy } from "react-icons/lu";
 
@@ -68,7 +68,6 @@ const Landing: React.FC = () => {
   const [encryptionStatus, setEncryptionStatus] = useState<
     "pending" | "rejected" | "verified"
   >("pending");
-  const [showForm, setShowForm] = useState<boolean>(false);
   const [method, setMethod] = useState<string[]>([]);
   const [cipherKey, setCipherKey] = useState<string>("");
   const [contentVisible, setContentVisible] = useState<boolean>(false);
@@ -79,8 +78,6 @@ const Landing: React.FC = () => {
   const [textToDecrypt, setTextToDecrypt] = useState<string>("");
   const [decryptedText, setDecryptedText] = useState<string>("");
   const [isCopied, setIsCopied] = useState<boolean>(false);
-
-  const navigate = useNavigate();
 
   // Determine if the device is mobile or desktop
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -437,8 +434,8 @@ const Landing: React.FC = () => {
                       style={{
                         width: "100%",
                         padding: "10px 16px",
-                        backgroundColor: showForm ? "transparent" : "#3182CE",
-                        color: showForm ? "#3182CE" : "white",
+                        backgroundColor: "#3182CE",
+                        color: "white",
                         borderRadius: "4px",
                         cursor: "pointer",
                       }}
