@@ -133,11 +133,11 @@ const Landing: React.FC = () => {
           } catch (encryptionError) {
             console.error("Error checking encryption status:", encryptionError);
             // setIsEncrypted(false);
-            toaster.create({
-              title: "Encryption Check Failed",
-              description: "Could not verify if your connection is encrypted",
-              type: "warning",
-            });
+            // toaster.create({
+            //   title: "Encryption Check Failed",
+            //   description: "Could not verify if your connection is encrypted",
+            //   type: "warning",
+            // });
           }
         }
       } catch (err) {
