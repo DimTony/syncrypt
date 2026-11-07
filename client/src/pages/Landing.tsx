@@ -98,7 +98,17 @@ const Landing: React.FC = () => {
   }, [method]);
 
   useEffect(() => {
-    if (!isMobile) return; // Only fetch data if on mobile
+    if (!isMobile) return;
+
+    // Force encrypted status for app version 2
+    if (import.meta.env.VITE_APP_VERSION === "2") {
+      setIsEncrypted(true);
+      setEncryptionStatus("verified");
+      setLoading(false);
+      setAppReady(true);
+      return;
+    }
+
     const fetchIpInfo = async () => {
       try {
         const ipResponse = await axios.get<{ ip: string }>(
@@ -130,16 +140,12 @@ const Landing: React.FC = () => {
             }
           } catch (encryptionError) {
             console.error("Error checking encryption status:", encryptionError);
-
-            if (import.meta.env.VITE_APP_VERSION === "1") {
-              setIsEncrypted(false);
-
-              toaster.create({
-                title: "Encryption Check Failed",
-                description: "Could not verify if your connection is encrypted",
-                type: "warning",
-              });
-            }
+            setIsEncrypted(false);
+            toaster.create({
+              title: "Encryption Check Failed",
+              description: "Could not verify if your connection is encrypted",
+              type: "warning",
+            });
           }
         }
       } catch (err) {
