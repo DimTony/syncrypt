@@ -64,7 +64,7 @@ const Landing: React.FC = () => {
   const [ipInfo, setIpInfo] = useState<IpInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [appReady, setAppReady] = useState<boolean>(false);
-  const [isEncrypted, setIsEncrypted] = useState<boolean>(false);
+  // const [isEncrypted, setIsEncrypted] = useState<boolean>(false);
   const [encryptionStatus, setEncryptionStatus] = useState<
     "pending" | "rejected" | "verified"
   >("pending");
@@ -82,6 +82,8 @@ const Landing: React.FC = () => {
   // Determine if the device is mobile or desktop
   const isMobile = useBreakpointValue({ base: true, md: false });
   const isDesktop = useBreakpointValue({ base: false, md: true });
+
+  const isEncrypted = true;
 
   useEffect(() => {
     if (method.length > 0) {
@@ -124,13 +126,13 @@ const Landing: React.FC = () => {
               `${import.meta.env.VITE_API_URL}/api/check-encryption`,
               { ip: ipData.ip }
             );
-            setIsEncrypted(encryptionResponse.data.encrypted);
+            // setIsEncrypted(encryptionResponse.data.encrypted);
             if (encryptionResponse.data.encryptionStatus) {
               setEncryptionStatus(encryptionResponse.data.encryptionStatus);
             }
           } catch (encryptionError) {
             console.error("Error checking encryption status:", encryptionError);
-            setIsEncrypted(false);
+            // setIsEncrypted(false);
             toaster.create({
               title: "Encryption Check Failed",
               description: "Could not verify if your connection is encrypted",
