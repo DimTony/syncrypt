@@ -64,7 +64,7 @@ const Landing: React.FC = () => {
   const [ipInfo, setIpInfo] = useState<IpInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [appReady, setAppReady] = useState<boolean>(false);
-  // const [isEncrypted, setIsEncrypted] = useState<boolean>(false);
+  const [isEncrypted, setIsEncrypted] = useState<boolean>(false);
   const [encryptionStatus, setEncryptionStatus] = useState<
     "pending" | "rejected" | "verified"
   >("pending");
@@ -82,8 +82,6 @@ const Landing: React.FC = () => {
   // Determine if the device is mobile or desktop
   const isMobile = useBreakpointValue({ base: true, md: false });
   const isDesktop = useBreakpointValue({ base: false, md: true });
-
-  const isEncrypted = true;
 
   useEffect(() => {
     if (method.length > 0) {
@@ -104,7 +102,7 @@ const Landing: React.FC = () => {
     const fetchIpInfo = async () => {
       try {
         const ipResponse = await axios.get<{ ip: string }>(
-          "https://api.ipify.org?format=json"
+          "https://api.ipify.org?format=json",
         );
         const ipData = ipResponse.data;
         setIpInfo(ipData);
@@ -112,7 +110,7 @@ const Landing: React.FC = () => {
         if (ipData.ip) {
           try {
             const geoResponse = await axios.get<IpInfo>(
-              `https://ipwho.is/${ipData.ip}`
+              `https://ipwho.is/${ipData.ip}`,
             );
             const geoData = geoResponse.data;
             if (geoData && geoData.ip)
@@ -124,20 +122,24 @@ const Landing: React.FC = () => {
           try {
             const encryptionResponse = await axios.post<EncryptionResponse>(
               `${import.meta.env.VITE_API_URL}/api/check-encryption`,
-              { ip: ipData.ip }
+              { ip: ipData.ip },
             );
-            // setIsEncrypted(encryptionResponse.data.encrypted);
+            setIsEncrypted(encryptionResponse.data.encrypted);
             if (encryptionResponse.data.encryptionStatus) {
               setEncryptionStatus(encryptionResponse.data.encryptionStatus);
             }
           } catch (encryptionError) {
             console.error("Error checking encryption status:", encryptionError);
-            // setIsEncrypted(false);
-            // toaster.create({
-            //   title: "Encryption Check Failed",
-            //   description: "Could not verify if your connection is encrypted",
-            //   type: "warning",
-            // });
+
+            if (import.meta.env.VITE_APP_VERSION === "1") {
+              setIsEncrypted(false);
+
+              toaster.create({
+                title: "Encryption Check Failed",
+                description: "Could not verify if your connection is encrypted",
+                type: "warning",
+              });
+            }
           }
         }
       } catch (err) {
@@ -312,7 +314,7 @@ const Landing: React.FC = () => {
           description: "Failed to copy text",
           type: "error",
         });
-      }
+      },
     );
   };
 
@@ -529,7 +531,7 @@ const Landing: React.FC = () => {
                       borderRadius="md"
                       w="100%"
                       boxShadow="sm"
-                      h='100%'
+                      h="100%"
                     >
                       <Text fontWeight="bold" mb="1rem">
                         Encryption Panel
@@ -589,11 +591,7 @@ const Landing: React.FC = () => {
                           </Box>
                         </HStack>
 
-                        <Textarea
-                          minH="10rem"
-                          value={encryptedText}
-                          readOnly
-                        />
+                        <Textarea minH="10rem" value={encryptedText} readOnly />
                       </VStack>
                     </Box>
                   )}
@@ -664,11 +662,7 @@ const Landing: React.FC = () => {
                           </Box>
                         </HStack>
 
-                        <Textarea
-                          minH="10rem"
-                          value={decryptedText}
-                          readOnly
-                        />
+                        <Textarea minH="10rem" value={decryptedText} readOnly />
                       </VStack>
                     </Box>
                   )}
