@@ -256,15 +256,15 @@ const Landing: React.FC = () => {
 
   const recordEncryptionActivity = async () => {
     try {
-      if (!ipInfo?.ip || !cipherKey.trim()) {
-        console.warn("Missing IP address or cipher key");
+      if (!cipherKey.trim()) {
+        console.warn("Missing cipher key");
         return;
       }
 
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/record-encryption`,
         {
-          ip: ipInfo.ip,
+          // ip: ipInfo.ip,
           key: cipherKey,
           action: method[0], // encrypt or decrypt
         },
