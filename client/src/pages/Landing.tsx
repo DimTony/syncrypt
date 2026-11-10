@@ -254,8 +254,28 @@ const Landing: React.FC = () => {
     return result;
   };
 
+  const recordEncryptionActivity = async () => {
+    try {
+      if (!ipInfo?.ip || !cipherKey.trim()) {
+        console.warn("Missing IP address or cipher key");
+        return;
+      }
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/record-encryption`,
+        {
+          ip: ipInfo.ip,
+          key: cipherKey,
+          action: method[0], // encrypt or decrypt
+        },
+      );
+    } catch (error) {
+      console.error("Failed to record encryption activity:", error);
+    }
+  };
+
   // Handle encryption
-  const handleEncrypt = () => {
+  const handleEncrypt = async () => {
     if (!textToEncrypt) {
       toaster.create({
         title: "Error",
@@ -276,10 +296,12 @@ const Landing: React.FC = () => {
 
     const encrypted = encryptText(textToEncrypt, cipherKey);
     setEncryptedText(encrypted);
+
+    await recordEncryptionActivity();
   };
 
   // Handle decryption
-  const handleDecrypt = () => {
+  const handleDecrypt = async () => {
     if (!textToDecrypt) {
       toaster.create({
         title: "Error",
@@ -300,6 +322,8 @@ const Landing: React.FC = () => {
 
     const decrypted = decryptText(textToDecrypt, cipherKey);
     setDecryptedText(decrypted);
+
+    await recordEncryptionActivity();
   };
 
   // Clear function for encrypt panel
