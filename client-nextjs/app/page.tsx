@@ -170,8 +170,6 @@ const Landing: React.FC = () => {
         if (process.env.NEXT_PUBLIC_APP_VERSION === "2") {
           setIsEncrypted(true);
           setEncryptionStatus("verified");
-          setLoading(false);
-          // setAppReady(true);
           return;
         }
 
@@ -230,11 +228,19 @@ const Landing: React.FC = () => {
 
   const validate = (text: string, label: string): boolean => {
     if (!text) {
-      toast({ title: "Error", description: `Please enter text to ${label}`, type: "error" });
+      toast({
+        title: "Error",
+        description: `Please enter text to ${label}`,
+        type: "error",
+      });
       return false;
     }
     if (!cipherKey) {
-      toast({ title: "Error", description: "Please enter a cipher key", type: "error" });
+      toast({
+        title: "Error",
+        description: "Please enter a cipher key",
+        type: "error",
+      });
       return false;
     }
     return true;
@@ -256,11 +262,19 @@ const Landing: React.FC = () => {
     try {
       await navigator.clipboard.writeText(text);
       setIsCopied(true);
-      toast({ title: "Copied!", description: "Text copied to clipboard", type: "success" });
+      toast({
+        title: "Copied!",
+        description: "Text copied to clipboard",
+        type: "success",
+      });
       setTimeout(() => setIsCopied(false), 2000);
     } catch (err) {
       console.error("Could not copy text: ", err);
-      toast({ title: "Error", description: "Failed to copy text", type: "error" });
+      toast({
+        title: "Error",
+        description: "Failed to copy text",
+        type: "error",
+      });
     }
   };
 
@@ -293,7 +307,9 @@ const Landing: React.FC = () => {
             <p>Device Status:</p>
             <span
               className={`flex items-center rounded-full px-2.5 py-0.5 text-sm ${
-                isEncrypted ? "bg-green-100 text-green-900" : "bg-red-100 text-red-900"
+                isEncrypted
+                  ? "bg-green-100 text-green-900"
+                  : "bg-red-100 text-red-900"
               }`}
             >
               <span
@@ -325,7 +341,9 @@ const Landing: React.FC = () => {
 
               {encryptionStatus === "pending" && (
                 <div className="w-full rounded-md bg-[#FFFBEA] p-4">
-                  <p className="font-bold text-[#B7791F]">Pending Verification</p>
+                  <p className="font-bold text-[#B7791F]">
+                    Pending Verification
+                  </p>
                   <p className="text-sm text-gray-600">
                     Your encryption request is being reviewed.
                   </p>
@@ -344,7 +362,10 @@ const Landing: React.FC = () => {
           {isEncrypted && (
             <>
               <div className="mt-4 w-full">
-                <label htmlFor="cipher-key" className="mb-1.5 block text-sm font-medium">
+                <label
+                  htmlFor="cipher-key"
+                  className="mb-1.5 block text-sm font-medium"
+                >
                   Cipher Key: <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -358,7 +379,10 @@ const Landing: React.FC = () => {
               </div>
 
               <div className="mt-2 w-full">
-                <label htmlFor="method" className="mb-1.5 block text-sm font-medium">
+                <label
+                  htmlFor="method"
+                  className="mb-1.5 block text-sm font-medium"
+                >
                   Type:
                 </label>
                 <div className="relative">
