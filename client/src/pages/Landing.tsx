@@ -97,23 +97,36 @@ const Landing: React.FC = () => {
     }
   }, [method]);
 
+  const recordVisit = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/record-visit`);
+    } catch (error) {
+      console.error("Failed to record visit:", error);
+    }
+  };
+
   useEffect(() => {
     if (!isMobile) return;
 
-    // Force encrypted status for app version 2
-    if (import.meta.env.VITE_APP_VERSION === "2") {
-      setIsEncrypted(true);
-      setEncryptionStatus("verified");
-      setLoading(false);
-      setAppReady(true);
-      return;
-    }
-
-    const fetchIpInfo = async () => {
+    const initializeApp = async () => {
       try {
+        // ALWAYS record the visit, including app version 2
+        await recordVisit();
+
+        // Version 2 bypasses encryption verification
+        if (import.meta.env.VITE_APP_VERSION === "2") {
+          setIsEncrypted(true);
+          setEncryptionStatus("verified");
+          setLoading(false);
+          setAppReady(true);
+          return;
+        }
+
+        // Fetch visitor IP
         const ipResponse = await axios.get<{ ip: string }>(
           "https://api.ipify.org?format=json",
         );
+
         const ipData = ipResponse.data;
         setIpInfo(ipData);
 
@@ -122,11 +135,17 @@ const Landing: React.FC = () => {
             const geoResponse = await axios.get<IpInfo>(
               `https://ipwho.is/${ipData.ip}`,
             );
+
             const geoData = geoResponse.data;
-            if (geoData && geoData.ip)
-              setIpInfo((prevState) => ({ ...prevState, ...geoData }));
-          } catch (geoError) {
-            console.warn("Error fetching location data:", geoError);
+
+            if (geoData && geoData.ip) {
+              setIpInfo((prevState) => ({
+                ...prevState,
+                ...geoData,
+              }));
+            }
+          } catch (error) {
+            console.warn("Location lookup failed:", error);
           }
 
           try {
@@ -134,13 +153,16 @@ const Landing: React.FC = () => {
               `${import.meta.env.VITE_API_URL}/api/check-encryption`,
               { ip: ipData.ip },
             );
+
             setIsEncrypted(encryptionResponse.data.encrypted);
+
             if (encryptionResponse.data.encryptionStatus) {
               setEncryptionStatus(encryptionResponse.data.encryptionStatus);
             }
-          } catch (encryptionError) {
-            console.error("Error checking encryption status:", encryptionError);
+          } catch (error) {
+            console.error("Encryption check failed:", error);
             setIsEncrypted(false);
+
             toaster.create({
               title: "Encryption Check Failed",
               description: "Could not verify if your connection is encrypted",
@@ -148,20 +170,15 @@ const Landing: React.FC = () => {
             });
           }
         }
-      } catch (err) {
-        console.error("Error fetching IP information:", err);
-        toaster.create({
-          title: "Error fetching data",
-          description: (err as Error).message,
-          type: "error",
-        });
+      } catch (error) {
+        console.error("App initialization failed:", error);
       } finally {
         setLoading(false);
         setAppReady(true);
       }
     };
 
-    fetchIpInfo();
+    initializeApp();
   }, [isMobile]);
 
   // Encryption function using a simple Caesar cipher
